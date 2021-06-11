@@ -308,6 +308,10 @@ void loop()
 		else if (strstr(input, "edit ") != NULL && input[0] == 'e' && input[3] == 't')
 		{
 			editContact(getId(input));
+		}		
+		else if (strstr(input, "groupedit ") != NULL && input[0] == 'g' && input[8] == 't')
+		{
+			editGroup(getId(input));
 		}
 		else
 		{

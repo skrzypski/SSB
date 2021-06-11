@@ -163,4 +163,11 @@ bool loginUser(char* str);
 **/
 void editContact(int ID_Contact);
 
+/**
+ * @brief
+ * Funkcja edytująca grupę
+ * @param ID_Group - ID grupy do edycji
+**/
+void editGroup(int ID_Group);
+
 #endif

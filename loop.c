@@ -19,6 +19,7 @@ void printHelp()
 	printf("contactadd = add contact\n");
 	printf("contactdelete [CONTACT_ID] = delete contact\n");
 	printf("groupadd = add group\n");
+	printf("groupedit [GROUP_ID] = add group\n");
 	printf("groupdelete [GROUP_ID] = delete group\n");
 	printf("phoneadd [CONTACT_ID] = add phone number to contact\n");
 	printf("emailadd [CONTACT_ID] = add email to contact\n");
@@ -29,7 +30,7 @@ void printHelp()
 	printf("RELATION_ID is number in the brackets next to group name in contact\n");
 	printf("list = print all contacts\n");
 	printf("list -k [SEARCH_KEY] = search in contacts and print results\n");
-	printf("list -g [ID_GROUP] = print only contacts assigned to given group\n");
+	printf("list -g [GROUP_ID] = print only contacts assigned to given group\n");
 	printf("list -s <asc/desc> <name/surname> = print contacts sorted <ASCending/DESCending> by <NAME/SURNAME>\n");
 	printf("save = save pending changes\n");
 	printf("bye = close program\n");
@@ -424,6 +425,7 @@ void relationDelete(int id)
 	}
 	isSaved = false;
 	save();
+	loadData();
 	if (!owned)
 	{
 		err("Relation do not exists!");
@@ -476,6 +478,7 @@ void deleteContact(int id)
 	}
 	isSaved = false;
 	save();
+	loadData();
 	if (!owned)
 	{
 		err("Contact do not exists!");
@@ -506,6 +509,7 @@ void deleteGroup(int id)
 	}
 	isSaved = false;
 	save();
+	loadData();
 	if (!owned)
 	{
 		err("Group do not exists!");
@@ -620,6 +624,7 @@ void addContact()
 	strcpy((contactList + contactCount - 1)->Description, description);
 	isSaved = false;
 	save();
+	loadData();
 }
 
 void addPhone(int ID)
@@ -656,6 +661,7 @@ void addPhone(int ID)
 	strcpy((phoneList + phoneCount - 1)->Number, phone);
 	isSaved = false;
 	save();
+	loadData();
 }
 
 void addEMail(int ID)
@@ -692,6 +698,7 @@ void addEMail(int ID)
 	strcpy((emailList + emailCount - 1)->Mail, mail);
 	isSaved = false;
 	save();
+	loadData();
 }
 
 void addAdress(int ID)
@@ -743,6 +750,7 @@ void addAdress(int ID)
 	strcpy((adressList + adressCount - 1)->City, city);
 	isSaved = false;
 	save();
+	loadData();
 }
 
 void addGroup()
@@ -765,6 +773,7 @@ void addGroup()
 	strcpy((groupList + groupCount - 1)->Description, desc);
 	isSaved = false;
 	save();
+	loadData();
 }
 
 void assignGroup(int ID_Contact, int ID_Group)
@@ -816,6 +825,7 @@ void assignGroup(int ID_Contact, int ID_Group)
 	(relationList + relationCount - 1)->toRemove = false;
 	isSaved = false;
 	save();
+	loadData();
 }
 
 bool createUser(char* str)
@@ -1077,4 +1087,44 @@ void editContact(int ID_Contact)
 	}
 	isSaved = false;
 	save();
+	loadData();
+}
+
+void editGroup(int ID_Group)
+{
+	struct Group* g = NULL;
+	for (int i = 0; i < groupCount; i++)
+	{
+		if (ID_Group == (groupList + i)->ID_Group && strcmp(LOGGED_USER, (groupList + i)->Owner) == 0)
+		{
+			g = groupList + i;
+			break;
+		}
+	}
+	if (g == NULL)
+	{
+		err("Group not found!");
+		return;
+	}
+	char newData[ENTRY_SIZE];
+	char newDesc[INPUT_SIZE];
+	succ("To change acutal field write new data");
+	succ("To not change data press ENTER");
+	printf("Name(%s): ", g->Name);
+	fgets(newData, ENTRY_SIZE, stdin);
+	newData[strlen(newData) - 1] = NULL;
+	if (strcmp(newData, "") != 0)
+	{
+		strcpy(g->Name, newData);
+	}
+	printf("Description(%s): ", g->Description);
+	fgets(newDesc, INPUT_SIZE, stdin);
+	newDesc[strlen(newDesc) - 1] = NULL;
+	if (strcmp(newDesc, "") != 0)
+	{
+		strcpy(g->Description, newDesc);
+	}
+	isSaved = false;
+	save();
+	loadData();
 }

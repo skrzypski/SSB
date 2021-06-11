@@ -7,6 +7,12 @@
 
 bool save()
 {
+	writeContact();
+	writePhone();
+	writeAdress();
+	writeEmail();
+	writeGroup();
+	writeRelation();
 	fclose(db.users);
 	fclose(db.contacts);
 	fclose(db.phones);
