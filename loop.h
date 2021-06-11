@@ -54,6 +54,15 @@ void printContactsGroups(int ID_Group);
 
 /**
  * @brief
+ * Funkcja dodająca relacje do kolejki do usunięcia
+ * Usuwanie realizowane w funkcji zapisu do pliku
+ * @param id - ID relacji do usunięcia
+ * @see writeRelation()
+**/
+void relationDelete(int id);
+
+/**
+ * @brief
  * Funkcja dodająca kontakt do kolejki do usunięcia
  * Usuwanie realizowane w funkcji zapisu do pliku
  * @param id - ID kontaktu do usunięcia
@@ -69,15 +78,6 @@ void deleteContact(int id);
  * @see writeGroup()
 **/
 void deleteGroup(int id);
-
-/**
- * @brief
- * Funkcja dodająca relacje do kolejki do usunięcia
- * Usuwanie realizowane w funkcji zapisu do pliku
- * @param id - ID relacji do usunięcia
- * @see writeRelation()
-**/
-void relationDelete(int id);
 
 /**
  * @brief

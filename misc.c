@@ -112,24 +112,6 @@ void loadData()
 	relationCount = 0;
 	relationLast = 0;
 
-	toRemoveContact = NULL;
-	toRemoveContactCount = 0;
-
-	toRemoveGroup = NULL;
-	toRemoveGroupCount = 0;
-
-	toRemoveRelation = NULL;
-	toRemoveRelationCount = 0;
-
-	queueRemoveContact = NULL;
-	queueRemoveContactCount = 0;
-
-	queueRemoveGroup = NULL;
-	queueRemoveGroupCount = 0;
-
-	queueRemoveRelation = NULL;
-	queueRemoveRelationCount = 0;
-
 	db.contacts = fopen("contacts.ssb", "r");
 	db.phones = fopen("phones.ssb", "r");
 	db.emails = fopen("emails.ssb", "r");

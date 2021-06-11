@@ -163,24 +163,6 @@ struct Relation* relationList; ///< Lista przechowująca relacje
 int relationCount; ///< Ilość relacji
 int relationLast; ///< ID ostatniej relacji
 
-int* toRemoveContact;  ///< Lista kontaktów do usunięcia
-int toRemoveContactCount; ///< Długość listy kontaktów do usunięcia
-
-int* toRemoveGroup; ///< Lista grup do usunięcia
-int toRemoveGroupCount; ///< Długość listy grup do usunięcia
-
-int* toRemoveRelation; ///< Lista relacji do usunięcia
-int toRemoveRelationCount; ///< Długość listy grup do usunięcia
-
-int* queueRemoveContact;  ///< Lista kontaktów zakolejkowanych do usunięcia
-int queueRemoveContactCount; ///< Długość listy kontaktów zakolejkowanych do usunięcia
-
-int* queueRemoveGroup; ///< Lista grup zakolejkowanych do usunięcia
-int queueRemoveGroupCount; ///< Długość listy grup zakolejkowanych do usunięcia
-
-int* queueRemoveRelation; ///< Lista relacji zakolejkowanych do usunięcia
-int queueRemoveRelationCount; ///< Długość listy relacji zakolejkowanych do usunięcia
-
 #pragma endregion
 
 #endif

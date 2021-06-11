@@ -43,24 +43,6 @@ void init_globals()
 	 relationList = NULL;
 	 relationCount = 0;
 	 relationLast = 0;
-
-	 toRemoveContact = NULL;
-	 toRemoveContactCount = 0;
-
-	 toRemoveGroup = NULL;
-	 toRemoveGroupCount = 0;
-
-	 toRemoveRelation = NULL;
-	 toRemoveRelationCount = 0;
-
-	 queueRemoveContact = NULL;
-	 queueRemoveContactCount = 0;
-
-	 queueRemoveGroup = NULL;
-	 queueRemoveGroupCount = 0;
-
-	 queueRemoveRelation = NULL;
-	 queueRemoveRelationCount = 0;
 }
 
 /**
@@ -139,7 +121,12 @@ void loop()
 			char* key = strtok(input, " ");
 			key = strtok(NULL, " ");
 			key = strtok(NULL, " ");
-			printContacts(key);
+			if(key != NULL) printContacts(key);
+			else
+			{
+				err("Too few arguments!");
+				continue;
+			}
 		}
 		else if (strstr(input, "list -s ") != NULL && input[0] == 'l' && input[3] == 't')
 		{
@@ -152,28 +139,52 @@ void loop()
 				counter++;
 				buff = strtok(NULL, " ");
 				if (counter == 2) dir = buff;
-				if (counter == 3) field = buff;
+				if (counter == 3)
+				{
+					field = buff;
+					break;
+				}
 			}
-			printSorted(dir, field);
+			if(counter == 3) printSorted(dir, field);
+			else
+			{
+				err("Too few arguments!");
+				continue;
+			}
 		}
 		else if (strstr(input, "list -g ") != NULL && input[0] == 'l' && input[3] == 't')
 		{
 			char* gid = strtok(input, " ");
 			gid = strtok(NULL, " ");
 			gid = strtok(NULL, " ");
-			printContactsGroups(atoi(gid));
+			if(gid != NULL)printContactsGroups(atoi(gid));
+			else
+			{
+				err("Too few arguments!");
+				continue;
+			}
 		}
 		else if (strstr(input, "contactdelete ") != NULL && input[0] == 'c' && input[12] == 'e')
 		{
 			char* cid = strtok(input, " ");
 			cid = strtok(NULL, " ");
-			deleteContact(atoi(cid));
+			if (cid != NULL) deleteContact(atoi(cid));
+			else
+			{
+				err("Too few arguments!");
+				continue;
+			}
 		}
 		else if (strstr(input, "groupdelete ") != NULL && input[0] == 'g' && input[10] == 'e')
 		{
 			char* cid = strtok(input, " ");
 			cid = strtok(NULL, " ");
-			deleteGroup(atoi(cid));
+			if(cid != NULL) deleteGroup(atoi(cid));
+			else
+			{
+				err("Too few arguments!");
+				continue;
+			}
 		}
 		else if (strcmp(input, "userlist") == 0)
 		{
@@ -267,16 +278,32 @@ void loop()
 			char* buff;
 			buff = strtok(input, " ");
 			buff = strtok(NULL, " ");
-			int idc = atoi(buff);
+			int idc, idg;
+			if(buff != NULL) idc = atoi(buff);
+			else
+			{
+				err("Too few arguments!");
+				continue;
+			}
 			buff = strtok(NULL, " ");
-			int idg = atoi(buff);
+			if (buff != NULL) idg = atoi(buff);
+			else
+			{
+				err("Too few arguments!");
+				continue;
+			}
 			assignGroup(idc, idg);
 		}
 		else if (strstr(input, "groupdeassign ") != NULL && input[0] == 'g' && input[12] == 'n')
 		{
 			char* cid = strtok(input, " ");
 			cid = strtok(NULL, " ");
-			relationDelete(atoi(cid));
+			if(cid != NULL) relationDelete(atoi(cid));
+			else
+			{
+				err("Too few arguments!");
+				continue;
+			}
 		}
 		else if (strstr(input, "edit ") != NULL && input[0] == 'e' && input[3] == 't')
 		{
@@ -302,12 +329,6 @@ void cleanup()
 	free(emailList);
 	free(groupList);
 	free(relationList);
-	free(toRemoveContact);
-	free(toRemoveGroup);
-	free(toRemoveRelation);	
-	free(queueRemoveContact);
-	free(queueRemoveGroup);
-	free(queueRemoveRelation);
 }
 
 /**

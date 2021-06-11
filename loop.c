@@ -93,7 +93,7 @@ void printGroups()
 {
 	for (int i = 0; i < groupCount; i++)
 	{
-		if (strcmp((groupList + i)->Owner, LOGGED_USER) == 0)
+		if (strcmp((groupList + i)->Owner, LOGGED_USER) == 0 && (groupList + i)->toRemove == false)
 		{
 			printf("ID: %d - %s: %s\n", (groupList + i)->ID_Group, (groupList + i)->Name, (groupList + i)->Description);
 		}
@@ -104,7 +104,7 @@ void printContacts(char* searchKey)
 {
 	for (int i = 0; i < contactCount; i++)
 	{
-		if (strcmp((contactList + i)->Owner, LOGGED_USER) == 0)
+		if (strcmp((contactList + i)->Owner, LOGGED_USER) == 0 && (contactList + i)->toRemove == false)
 		{
 			bool toShow = false;
 			if (strcmp(searchKey, "null") == 0) toShow = true;
@@ -268,7 +268,7 @@ void printSorted(char* dir, char* field)
 	}
 	for (int i = 0; i < contactCount; i++)
 	{
-		if (strcmp((contactList + i)->Owner, LOGGED_USER) == 0)
+		if (strcmp((contactSorted + i)->Owner, LOGGED_USER) == 0 && (contactSorted + i)->toRemove == false)
 		{
 			printf("ID: %d\n", (contactSorted + i)->ID_Contact);
 			printf("Name: %s\n", (contactSorted + i)->Name);
@@ -328,7 +328,7 @@ void printContactsGroups(int ID_Group)
 {
 	for (int i = 0; i < contactCount; i++)
 	{
-		if (strcmp((contactList + i)->Owner, LOGGED_USER) == 0)
+		if (strcmp((contactList + i)->Owner, LOGGED_USER) == 0 && (contactList + i)->toRemove == false)
 		{
 			bool toShow = false;
 			for (int j = 0; j < relationCount; j++)
@@ -411,6 +411,26 @@ void printContactsGroups(int ID_Group)
 	}
 }
 
+void relationDelete(int id)
+{
+	bool owned = false;
+	for (int i = 0; i < relationCount; i++)
+	{
+		if (id == relationList[i].ID_Relation)
+		{
+			owned = true;
+			relationList[i].toRemove = true;
+		}
+	}
+	isSaved = false;
+	save();
+	if (!owned)
+	{
+		err("Relation do not exists!");
+		return;
+	}
+}
+
 void deleteContact(int id)
 {
 	bool owned = false;
@@ -421,18 +441,46 @@ void deleteContact(int id)
 			if (strcmp(LOGGED_USER, contactList[i].Owner) == 0)
 			{
 				owned = true;
+				contactList[i].toRemove = true;
+				int j = 0;
+				for (j = 0; j < relationCount; j++)
+				{
+					if (relationList[j].ID_Contact == id)
+					{
+						relationDelete(relationList[j].ID_Relation);
+					}
+				}
+				for (j = 0; j < phoneCount; j++)
+				{
+					if (phoneList[j].ID_Contact == id)
+					{
+						phoneList[j].toRemove = true;
+					}
+				}
+				for (j = 0; j < emailCount; j++)
+				{
+					if (emailList[j].ID_Contact == id)
+					{
+						emailList[j].toRemove = true;
+					}
+				}
+				for (j = 0; j < adressCount; j++)
+				{
+					if (adressList[j].ID_Contact == id)
+					{
+						adressList[j].toRemove = true;
+					}
+				}
 			}
 		}
 	}
+	isSaved = false;
+	save();
 	if (!owned)
 	{
 		err("Contact do not exists!");
 		return;
 	}
-	queueRemoveContactCount++;
-	queueRemoveContact = (int*)realloc(queueRemoveContact, queueRemoveContactCount * sizeof(int));
-	*(queueRemoveContact + queueRemoveContactCount - 1) = id;
-	save();
 }
 
 void deleteGroup(int id)
@@ -445,26 +493,24 @@ void deleteGroup(int id)
 			if (strcmp(LOGGED_USER, groupList[i].Owner) == 0)
 			{
 				owned = true;
+				groupList[i].toRemove = true;
+				for (int j = 0; j < relationCount; j++)
+				{
+					if (relationList[j].ID_Group == id)
+					{
+						relationDelete(relationList[j].ID_Relation);
+					}
+				}
 			}
 		}
 	}
+	isSaved = false;
+	save();
 	if (!owned)
 	{
 		err("Group do not exists!");
 		return;
 	}
-	queueRemoveGroupCount++;
-	queueRemoveGroup = (int*)realloc(queueRemoveGroup, queueRemoveGroupCount * sizeof(int));
-	*(queueRemoveGroup + queueRemoveGroupCount - 1) = id;
-	save();
-}
-
-void relationDelete(int id)
-{
-	queueRemoveRelationCount++;
-	queueRemoveRelation = (int*)realloc(queueRemoveRelation, queueRemoveRelationCount * sizeof(int));
-	*(queueRemoveRelation + queueRemoveRelationCount - 1) = id;
-	save();
 }
 
 void logout()
@@ -480,9 +526,24 @@ void deleteMe()
 		if (strcmp(LOGGED_USER, (userList + i)->login) == 0)
 		{
 			(userList + i)->toRemove = true;
+			for (int j = 0; j < contactCount; j++)
+			{
+				if (strcmp(LOGGED_USER, (contactList + j)->Owner) == 0)
+				{
+					(contactList + j)->toRemove = true;
+				}
+			}
+			for (int j = 0; j < groupCount; j++)
+			{
+				if (strcmp(LOGGED_USER, (groupList + j)->Owner) == 0)
+				{
+					(groupList + j)->toRemove = true;
+				}
+			}
 			succ("User deleted!");
 			logout();
 			writeUsers();
+			save();
 			break;
 		}
 	}
@@ -591,6 +652,7 @@ void addPhone(int ID)
 	phoneLast++;
 	(phoneList + phoneCount - 1)->ID_Phone = phoneLast;
 	(phoneList + phoneCount - 1)->ID_Contact = ID;
+	(phoneList + phoneCount - 1)->toRemove = false;
 	strcpy((phoneList + phoneCount - 1)->Number, phone);
 	isSaved = false;
 	save();
@@ -626,6 +688,7 @@ void addEMail(int ID)
 	emailLast++;
 	(emailList + emailCount - 1)->ID_Email = emailLast;
 	(emailList + emailCount - 1)->ID_Contact = ID;
+	(emailList + emailCount - 1)->toRemove = false;
 	strcpy((emailList + emailCount - 1)->Mail, mail);
 	isSaved = false;
 	save();
@@ -673,6 +736,7 @@ void addAdress(int ID)
 	adressLast++;
 	(adressList + adressCount - 1)->ID_Adress = adressLast;
 	(adressList + adressCount - 1)->ID_Contact = ID;
+	(adressList + adressCount - 1)->toRemove = false;
 	strcpy((adressList + adressCount - 1)->FirstLine, fline);
 	strcpy((adressList + adressCount - 1)->SecondLine, sline);
 	strcpy((adressList + adressCount - 1)->PostalCode, postal);
@@ -749,6 +813,7 @@ void assignGroup(int ID_Contact, int ID_Group)
 	(relationList + relationCount - 1)->ID_Relation = relationLast;
 	(relationList + relationCount - 1)->ID_Contact = ID_Contact;
 	(relationList + relationCount - 1)->ID_Group = ID_Group;
+	(relationList + relationCount - 1)->toRemove = false;
 	isSaved = false;
 	save();
 }
@@ -1010,5 +1075,6 @@ void editContact(int ID_Contact)
 			}
 		}
 	}
+	isSaved = false;
 	save();
 }
